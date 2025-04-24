@@ -14,8 +14,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
+        // Commenting out the factory code that's causing errors
+        /*
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
@@ -23,5 +23,9 @@ class DatabaseSeeder extends Seeder
 
         // Create sample products
         Product::factory(20)->create();
+        */
+
+        // Seed site settings
+        $this->call(SiteSettingsSeeder::class);
     }
 }

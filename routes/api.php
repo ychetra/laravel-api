@@ -1,6 +1,9 @@
 <?php
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\SiteSettingController;
+use App\Http\Controllers\OrderController;
 use Illuminate\Support\Facades\Route;
 
 // Add this at the top of your routes/api.php file
@@ -21,6 +24,22 @@ Route::middleware('auth:api')->group(function () {
 
     // Product routes
     Route::apiResource('products', ProductController::class);
+
+    // Category routes
+    Route::apiResource('categories', CategoryController::class);
+
+    // Site Settings routes
+    Route::get('settings', [SiteSettingController::class, 'index']);
+    Route::post('settings', [SiteSettingController::class, 'update']);
+    
+    // Order routes
+    Route::apiResource('orders', OrderController::class);
+    
+    // Admin routes
+    Route::middleware('admin')->group(function () {
+        Route::get('admin/orders', [OrderController::class, 'adminIndex']);
+        Route::put('admin/orders/{id}', [OrderController::class, 'adminUpdate']);
+    });
 });
 
 // Health check endpoint
