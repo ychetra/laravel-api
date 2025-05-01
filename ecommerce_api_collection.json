@@ -1,8 +1,8 @@
 {
 	"info": {
-		"_postman_id": "d7e53a52-8a4c-4b4f-b1d1-c3a1f48e8d71",
-		"name": "E-commerce API",
-		"description": "Complete API collection for the e-commerce system",
+		"_postman_id": "8b1a2c3d-4e5f-6a7b-8c9d-0e1f2a3b4c5d",
+		"name": "Laravel Ecommerce API",
+		"description": "A collection for testing the Laravel Ecommerce API endpoints",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -12,27 +12,22 @@
 				{
 					"name": "Register",
 					"request": {
-						"method": "POST",
+						"method": "POST",	
 						"header": [
 							{
-								"key": "Content-Type",
-								"value": "application/json",
+								"key": "Accept",
+								"value": "application/json",	
 								"type": "text"
 							},
 							{
-								"key": "Accept",
+								"key": "Content-Type",
 								"value": "application/json",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Test User\",\n    \"email\": \"test@example.com\",\n    \"password\": \"password123\",\n    \"password_confirmation\": \"password123\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "{\n    \"name\": \"Test User\",\n    \"email\": \"test@example.com\",\n    \"password\": \"password\",\n    \"password_confirmation\": \"password\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/register",
@@ -54,20 +49,8 @@
 							"script": {
 								"exec": [
 									"var jsonData = pm.response.json();",
-									"if (jsonData.data && jsonData.data.token) {",
-									"    pm.environment.set(\"token\", jsonData.data.token);",
-									"    console.log(\"Token saved to environment\");",
-									"}",
-									"",
-									"// Handle different token formats",
-									"if (jsonData.token) {",
-									"    pm.environment.set(\"token\", jsonData.token);",
-									"    console.log(\"Token saved to environment (alternative format)\");",
-									"}",
-									"",
-									"if (jsonData.access_token) {",
+									"if (jsonData && jsonData.access_token) {",
 									"    pm.environment.set(\"token\", jsonData.access_token);",
-									"    console.log(\"Access token saved to environment\");",
 									"}"
 								],
 								"type": "text/javascript"
@@ -78,24 +61,19 @@
 						"method": "POST",
 						"header": [
 							{
-								"key": "Content-Type",
+								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
 							},
 							{
-								"key": "Accept",
+								"key": "Content-Type",
 								"value": "application/json",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"test@example.com\",\n    \"password\": \"password123\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "{\n    \"email\": \"admin@example.com\",\n    \"password\": \"password\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/login",
@@ -138,7 +116,7 @@
 					"response": []
 				},
 				{
-					"name": "User Info",
+					"name": "Get User Profile",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -160,6 +138,48 @@
 							],
 							"path": [
 								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData && jsonData.access_token) {",
+									"    pm.environment.set(\"token\", jsonData.access_token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/refresh",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"refresh"
 							]
 						}
 					},
@@ -199,49 +219,7 @@
 					"response": []
 				},
 				{
-					"name": "Create Product",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"Sample Product\",\n    \"description\": \"This is a sample product description\",\n    \"price\": 29.99,\n    \"category_id\": 1,\n    \"stock_quantity\": 100,\n    \"is_featured\": true,\n    \"image_url\": \"https://example.com/product-image.jpg\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/products",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"products"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Product",
+					"name": "Get Product By ID",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -270,6 +248,71 @@
 					"response": []
 				},
 				{
+					"name": "Create Product",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "New Test Product",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "This is a test product",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "29.99",
+									"type": "text"
+								},
+								{
+									"key": "createdate",
+									"value": "2025-04-30",
+									"type": "text"
+								},
+								{
+									"key": "slug",
+									"type": "text",
+									"disabled": true,
+									"value": "new-test-product-custom"
+								},
+								{
+									"key": "image",
+									"type": "file",
+									"src": "/path/to/image.jpg",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/products",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Update Product",
 					"request": {
 						"method": "PUT",
@@ -280,24 +323,52 @@
 								"type": "text"
 							},
 							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
 							}
 						],
 						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"Updated Product Name\",\n    \"price\": 39.99,\n    \"stock_quantity\": 150\n}",
-							"options": {
-								"raw": {
-									"language": "json"
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Updated Product Name",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "This is an updated description",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "39.99",
+									"type": "text"
+								},
+								{
+									"key": "createdate",
+									"value": "2025-04-30",
+									"type": "text"
+								},
+								{
+									"key": "slug",
+									"type": "text",
+									"disabled": true,
+									"value": "updated-product-custom"
+								},
+								{
+									"key": "image",
+									"type": "file",
+									"src": "/path/to/image.jpg",
+									"disabled": true
+								},
+								{
+									"key": "_method",
+									"value": "PUT",
+									"type": "text"
 								}
-							}
+							]
 						},
 						"url": {
 							"raw": "{{base_url}}/products/1",
@@ -375,91 +446,7 @@
 					"response": []
 				},
 				{
-					"name": "Create Category",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"Electronics\",\n    \"description\": \"Electronic devices and gadgets\",\n    \"parent_id\": null\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/categories",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"categories"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Create Subcategory",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"Smartphones\",\n    \"description\": \"Mobile phones and accessories\",\n    \"parent_id\": 1\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/categories",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"categories"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Category",
+					"name": "Get Category By ID",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -488,6 +475,43 @@
 					"response": []
 				},
 				{
+					"name": "Create Category",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"New Test Category\",\n    \"slug\": \"new-test-category\",\n    \"description\": \"This is a test category\",\n    \"parent_id\": null\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/categories",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Update Category",
 					"request": {
 						"method": "PUT",
@@ -510,12 +534,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Updated Category Name\",\n    \"description\": \"Updated category description\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "{\n    \"name\": \"Updated Category Name\",\n    \"slug\": \"updated-category-name\",\n    \"description\": \"This is an updated description\",\n    \"parent_id\": null\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/categories/1",
@@ -593,49 +612,7 @@
 					"response": []
 				},
 				{
-					"name": "Create Order",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"items\": [\n        {\n            \"product_id\": 1,\n            \"quantity\": 2\n        },\n        {\n            \"product_id\": 3,\n            \"quantity\": 1\n        }\n    ],\n    \"shipping_address\": \"123 Main Street, City, Country, 12345\",\n    \"billing_address\": \"123 Main Street, City, Country, 12345\",\n    \"shipping_method\": \"standard\",\n    \"notes\": \"Please deliver after 6 PM\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/orders",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"orders"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Order",
+					"name": "Get Order By ID",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -664,7 +641,44 @@
 					"response": []
 				},
 				{
-					"name": "Update Order Payment Status",
+					"name": "Create Order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"total_amount\": 99.98,\n    \"shipping_cost\": 5.00,\n    \"tax_amount\": 10.00,\n    \"shipping_method\": \"Standard Shipping\",\n    \"shipping_address\": \"123 Test Street, Test City, Test Country\",\n    \"billing_address\": \"123 Test Street, Test City, Test Country\",\n    \"notes\": \"Please deliver to the front door\",\n    \"items\": [\n        {\n            \"product_id\": 1,\n            \"quantity\": 2,\n            \"price\": 29.99,\n            \"subtotal\": 59.98\n        },\n        {\n            \"product_id\": 2,\n            \"quantity\": 1,\n            \"price\": 40.00,\n            \"subtotal\": 40.00\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/orders",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Order Status (Admin)",
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -686,19 +700,15 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"payment_status\": \"paid\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "{\n    \"status\": \"completed\",\n    \"payment_status\": \"paid\",\n    \"paid_at\": \"2023-04-30 15:30:00\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/orders/1",
+							"raw": "{{base_url}}/admin/orders/1",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
+								"admin",
 								"orders",
 								"1"
 							]
@@ -707,9 +717,9 @@
 					"response": []
 				},
 				{
-					"name": "Cancel Order",
+					"name": "Get All Orders (Admin)",
 					"request": {
-						"method": "DELETE",
+						"method": "GET",
 						"header": [
 							{
 								"key": "Authorization",
@@ -723,13 +733,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/orders/1",
+							"raw": "{{base_url}}/admin/orders",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
-								"orders",
-								"1"
+								"admin",
+								"orders"
 							]
 						}
 					},
@@ -791,12 +801,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"site_name\": \"My E-commerce Store\",\n    \"site_description\": \"Best products at competitive prices\",\n    \"contact_email\": \"support@mystore.com\",\n    \"contact_phone\": \"+1234567890\",\n    \"social_links\": {\n        \"facebook\": \"https://facebook.com/mystore\",\n        \"twitter\": \"https://twitter.com/mystore\",\n        \"instagram\": \"https://instagram.com/mystore\"\n    }\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "{\n    \"site_name\": \"My E-commerce Store\",\n    \"site_description\": \"Best products at competitive prices\",\n    \"site_logo\": \"https://example.com/logo.png\",\n    \"contact_email\": \"support@mystore.com\",\n    \"contact_phone\": \"+1234567890\",\n    \"social_links\": {\n        \"facebook\": \"https://facebook.com/mystore\",\n        \"twitter\": \"https://twitter.com/mystore\",\n        \"instagram\": \"https://instagram.com/mystore\"\n    }\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/settings",
@@ -813,130 +818,43 @@
 			]
 		},
 		{
-			"name": "Admin",
+			"name": "Miscellaneous",
 			"item": [
 				{
-					"name": "Get All Orders",
+					"name": "API Test",
 					"request": {
 						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
+						"header": [],
 						"url": {
-							"raw": "{{base_url}}/admin/orders",
+							"raw": "{{base_url}}/test",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
-								"admin",
-								"orders"
+								"test"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "Update Order Status",
+					"name": "Health Check",
 					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"status\": \"processing\",\n    \"payment_status\": \"paid\",\n    \"notes\": \"Customer payment confirmed\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
+						"method": "GET",
+						"header": [],
 						"url": {
-							"raw": "{{base_url}}/admin/orders/1",
+							"raw": "{{base_url}}/health",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
-								"admin",
-								"orders",
-								"1"
+								"health"
 							]
 						}
 					},
 					"response": []
 				}
 			]
-		},
-		{
-			"name": "API Test",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Accept",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{base_url}}/test",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"test"
-					]
-				},
-				"description": "Test the API connection"
-			},
-			"response": []
-		},
-		{
-			"name": "API Health Check",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Accept",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{base_url}}/health",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"health"
-					]
-				},
-				"description": "Check if the API is up and running"
-			},
-			"response": []
 		}
 	],
 	"event": [

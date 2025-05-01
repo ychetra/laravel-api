@@ -7,16 +7,54 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class CategoryController extends Controller
 {
     public function index(): JsonResponse
     {
-        $categories = Category::with(['products', 'children', 'parent'])->get();
-        return response()->json([
-            'success' => true,
-            'data' => $categories
-        ]);
+        try {
+            // Load categories without products by default
+            $categories = Category::all();
+            return response()->json([
+                'success' => true,
+                'data' => $categories
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error in CategoryController@index: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error retrieving categories',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get categories with products
+     */
+    public function indexWithProducts(): JsonResponse
+    {
+        try {
+            $categories = Category::with('products')->get();
+            
+            // Filter out categories with no products
+            $categoriesWithProducts = $categories->filter(function ($category) {
+                return $category->products->count() > 0;
+            });
+            
+            return response()->json([
+                'success' => true,
+                'data' => $categoriesWithProducts->values()
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error in CategoryController@indexWithProducts: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error retrieving categories with products',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function store(Request $request): JsonResponse
@@ -24,8 +62,7 @@ class CategoryController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'is_active' => 'boolean',
-            'parent_id' => 'nullable|exists:categories,id'
+            'is_active' => 'boolean'
         ]);
 
         if ($validator->fails()) {
@@ -39,8 +76,7 @@ class CategoryController extends Controller
             'name' => $request->name,
             'slug' => Str::slug($request->name),
             'description' => $request->description,
-            'is_active' => $request->is_active ?? true,
-            'parent_id' => $request->parent_id
+            'is_active' => $request->is_active ?? true
         ]);
 
         return response()->json([
@@ -51,9 +87,12 @@ class CategoryController extends Controller
 
     public function show(Category $category): JsonResponse
     {
+        // Load products for this specific category
+        $category->load('products');
+        
         return response()->json([
             'success' => true,
-            'data' => $category->load(['products', 'children', 'parent'])
+            'data' => $category
         ]);
     }
 
@@ -62,8 +101,7 @@ class CategoryController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'sometimes|required|string|max:255',
             'description' => 'nullable|string',
-            'is_active' => 'boolean',
-            'parent_id' => 'nullable|exists:categories,id'
+            'is_active' => 'boolean'
         ]);
 
         if ($validator->fails()) {

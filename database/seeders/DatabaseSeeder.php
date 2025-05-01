@@ -2,9 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use App\Models\Product;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -14,18 +11,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Commenting out the factory code that's causing errors
-        /*
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
-
-        // Create sample products
-        Product::factory(20)->create();
-        */
-
-        // Seed site settings
+        // First seed users
+        $this->call(UserSeeder::class);
+        
+        // Then seed categories with our fashion categories
+        $this->call(CategorySeeder::class);
+        
+        // Then seed fashion products
+        $this->call(FashionProductSeeder::class);
+        
+        // Finally seed site settings
         $this->call(SiteSettingsSeeder::class);
     }
 }

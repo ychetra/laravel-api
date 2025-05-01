@@ -15,6 +15,11 @@ Route::get('/test', function() {
 Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'register']);
 
+// Public category routes for testing
+Route::get('public/categories', [CategoryController::class, 'index']);
+Route::get('public/categories/with-products', [CategoryController::class, 'indexWithProducts']);
+Route::get('public/categories/{category}', [CategoryController::class, 'show']);
+
 // Protected routes
 Route::middleware('auth:api')->group(function () {
     // Auth routes
@@ -27,6 +32,7 @@ Route::middleware('auth:api')->group(function () {
 
     // Category routes
     Route::apiResource('categories', CategoryController::class);
+    Route::get('categories-with-products', [CategoryController::class, 'indexWithProducts']);
 
     // Site Settings routes
     Route::get('settings', [SiteSettingController::class, 'index']);
