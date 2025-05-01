@@ -64,3 +64,85 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+# Laravel API Deployment Fix
+
+This guide will help you fix the permission issues in your Laravel deployment on EC2.
+
+## Fix Permissions
+
+The main issue with your current deployment is incorrect permissions. The Laravel application needs proper permissions to write to storage and cache directories.
+
+Follow these steps to fix the issues:
+
+1. SSH into your EC2 instance:
+   ```
+   ssh ubuntu@54.255.138.254
+   ```
+
+2. Run the fix-permissions script:
+   ```
+   chmod +x fix-permissions.sh
+   sudo ./fix-permissions.sh
+   ```
+
+3. After fixing permissions, complete the Laravel setup:
+   ```
+   chmod +x complete-setup.sh
+   sudo ./complete-setup.sh
+   ```
+
+## What These Scripts Do
+
+### fix-permissions.sh
+- Sets correct file and directory permissions
+- Ensures www-data (web server user) has write access to storage and cache directories
+- Creates the products directory for image uploads
+- Creates the storage symbolic link
+
+### complete-setup.sh
+- Configures the .env file with database settings
+- Generates the application key
+- Configures JWT authentication
+- Runs migrations and seeders
+- Sets up Nginx to serve the Laravel application
+- Restarts Nginx and PHP-FPM
+
+## Image Access
+
+After running these scripts, your images will be accessible at:
+```
+http://54.255.138.254/storage/products/[image-name]
+```
+
+## Auto-start on Boot
+
+This deployment is already configured to start automatically on system boot through the systemd services for:
+- Nginx
+- MySQL
+- PHP-FPM
+
+## Troubleshooting
+
+If you encounter issues:
+
+1. Check Laravel logs:
+   ```
+   sudo tail -f /var/www/laravel/storage/logs/laravel.log
+   ```
+
+2. Check Nginx error logs:
+   ```
+   sudo tail -f /var/log/nginx/error.log
+   ```
+
+3. Check PHP-FPM logs:
+   ```
+   sudo tail -f /var/log/php8.3-fpm.log
+   ```
+
+4. Verify permissions:
+   ```
+   ls -la /var/www/laravel/storage
+   ls -la /var/www/laravel/bootstrap/cache
+   ```
